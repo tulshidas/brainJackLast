@@ -2,6 +2,7 @@ const ioHook = require('iohook');
 const monitor = require('./active-window');
 const request = require('request');
 const config = require('./config');
+const browserHistory = require('./browserHistory');
 
 
 module.exports = class ActivityTracker {
@@ -29,6 +30,96 @@ module.exports = class ActivityTracker {
         if (this.totalSeconds > this.maxIdleTime && !this.startIdleTime) {
             this.eventHandler();
         }
+    }
+
+    isBrowser(appName) {
+        return appName === "Google Chrome" || appName === "firefox" || appName === "opera" || appName === "torch" || appName === "safari" || appName === "seamonkey" || appName === "vivaldi" || appName === "maxthon" || appName === "";
+    }
+
+    getLatestURLS(browserName) {
+        if (browserName === "Google Chrome") {
+            console.log("Chrome tab clicked");
+            return browserHistory.getChromeHistory(10);
+        } else if (browserName === "firefox") {
+            return browserHistory.getFirefoxHistory(10);
+        } else if (browserName === "torch") {
+            return browserHistory.getTorchHistory(10);
+        } else if (browserName === "safari") {
+            return browserHistory.getSafariHistory(10);
+        } else if (browserName === "seamonkey") {
+            return browserHistory.getSeaMonkeyHistory(10);
+        } else if (browserName === "vivaldi") {
+            return browserHistory.getVivaldiHistory(10);
+        } else if (browserName === "opera") {
+            return browserHistory.getOperaHistory(10);
+        }
+
+    }
+
+    matchURL(urls, title, hasDoubleByte) {
+        console.log(title);
+        console.log(title.includes("\\u"));
+        if (hasDoubleByte) {
+            for (const url of urls) {
+                //console.log(url.title);
+                if (
+                    (url.title.startsWith(title) && url.title !== '') 
+                    || 
+                    (url.title === '' && title === '')
+                    ) {
+                    console.log("*****************************");
+                    console.log("URL matched!!!");
+                    console.log("*****************************");
+                    console.log("Title: " + url.title);
+                    console.log("URL: " + url.url);
+                    return url.url;
+                }
+            }
+        } else if (title.includes("\\u")) {
+            // console.log('title: ' + title.split("\\")[0]);
+            for (const url of urls) {
+                //console.log(url.title);
+                if ((url.title.startsWith(title.split("\\")[0]) && url.title !== '') || (url.title === '' && title === '')) {
+                    console.log("*****************************");
+                    console.log("URL matched!!!");
+                    console.log("*****************************");
+                    console.log("Title: " + url.title);
+                    console.log("URL: " + url.url);
+                    return url.url;
+                }
+            }
+        } else {
+            for (const url of urls) {
+               // console.log(url);
+                if ((title.startsWith(url.title) && url.title !== '') || (url.title === '' && title === '')) {
+                    console.log("*****************************");
+                    console.log("URL matched!!!");
+                    console.log("*****************************");
+                    console.log("Full Title: " + title);
+                    console.log("Title: " + url.title);
+                    console.log("URL: " + url.url);
+                    return url.url;
+                }
+            }
+        }
+        console.log("*****************************");
+        console.log("URL not found");
+        console.log("*****************************");
+        return "";
+    }
+
+    doubleByteCheck(str) {
+        for (var i = 0, n = str.length; i < n; i++) {
+            if (str.charCodeAt(i) > 255) {
+                return {
+                    hasDoubleByte: true,
+                    pos: i
+                };
+            }
+        }
+        return {
+            hasDoubleByte: false
+        };
     }
 
     end(){
@@ -69,6 +160,30 @@ module.exports = class ActivityTracker {
         userActivity.idleTime = [];
         userActivity.userId = this._usreId;
         // userActivity.date = this.getDateTime(new Date(),'dateonly');
+        if (this.isBrowser(userActivity.appData.app)) {
+            //console.log(userActivity.appData);
+            //console.log(userActivity.appData.title);
+
+            // solve unicode issue
+            let jsonStr = JSON.stringify(userActivity.appData).split('"')[7];
+            let doubleByteCheck = this.doubleByteCheck(userActivity.appData.title);
+            if (doubleByteCheck.hasDoubleByte) {
+                userActivity.appData.title = userActivity.appData.title.slice(0, doubleByteCheck.pos);
+            } else if (jsonStr.includes("\\u")) {
+                userActivity.appData.title = jsonStr;
+            }
+
+            const matchingURL = this.matchURL(
+                this.getLatestURLS(userActivity.appData.app),
+                userActivity.appData.title,
+                doubleByteCheck.hasDoubleByte);
+            if (matchingURL !== "") {
+
+                userActivity.appData.app = matchingURL;
+            }
+        }
+
+
 
         var reqBody = this.enctypt(JSON.stringify(userActivity));
         (function post(attempt) {

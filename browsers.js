@@ -1,7 +1,7 @@
 const path = require('path'),
       fs   = require('fs'),
       os = require('os'),
-      assumedAppLaunchingTimeMilSec = 5000;
+      assumedAppLaunchingTimeMilSec = 100;
 
 const CHROME           = 'Google Chrome',
       FIREFOX          = 'Mozilla Firefox',
@@ -74,10 +74,43 @@ else {
   defaultPaths.seamonkey = path.join(homeDirectory, 'Library', 'Application Support', 'SeaMonkey', 'Profiles')
 }
 
-browserDbLocations.chrome = findPaths(
-  defaultPaths.chrome,
-  CHROME
-);
+setTimeout(() => {
+  browserDbLocations.chrome = findPaths(
+    defaultPaths.chrome,
+    CHROME
+  );
+  browsers.browserDbLocations.firefox = browsers.findPaths(
+    browsers.defaultPaths.firefox,
+    browsers.FIREFOX
+  ); 
+  browsers.browserDbLocations.seamonkey = browsers.findPaths(
+    browsers.defaultPaths.seamonkey,
+    browsers.SEAMONKEY
+  );
+  if (process.platform === "darwin") {
+    browsers.browserDbLocations.safari = browsers.findPaths(
+      browsers.defaultPaths.safari,
+      browsers.SEAMONKEY
+    );    
+  }
+  browsers.browserDbLocations.opera = browsers.findPaths(
+    browsers.defaultPaths.opera,
+    browsers.OPERA
+  );  
+  browsers.browserDbLocations.torch = browsers.findPaths(
+    browsers.defaultPaths.torch,
+    browsers.TORCH
+  );  
+  browsers.browserDbLocations.maxthon = browsers.findPaths(
+    browsers.defaultPaths.maxthon,
+    browsers.MAXTHON
+  );
+  browsers.browserDbLocations.vivaldi = browsers.findPaths(
+    browsers.defaultPaths.vivaldi,
+    browsers.VIVALDI
+  );
+}, assumedAppLaunchingTimeMilSec);
+
 console.log(browserDbLocations);
 /**
  * Find all files recursively in specific folder with specific extension, e.g:

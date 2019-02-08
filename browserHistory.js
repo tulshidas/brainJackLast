@@ -135,8 +135,8 @@ function getMozillaBasedBrowserRecords(paths, browserName, historyTimeLength) {
         const db = new sqliteDatabase(newDbPath, {
           readonly: true
         });
-        const rows = db.prepare("select * from moz_places  ORDER BY id DESC limit 200").all();
-        console.log("Rows: ");
+        const rows = db.prepare("select * from moz_places  ORDER BY id DESC").all();
+        
         //get the last record
         //  const rows = db.prepare('SELECT * FROM moz_places WHERE ID = (SELECT MAX(ID) FROM moz_places)').get();
         //   console.log(rows);
@@ -225,17 +225,15 @@ function getSafariBasedBrowserRecords(paths, browserName, historyTimeLength) {
             "SELECT i.id, i.url, v.title, v.visit_time FROM history_items i INNER JOIN history_visits v on i.id = v.history_item"
           )
           .all();
-        console.log("Rows: ");
-        console.log(rows);
-        // for (let row of rows) {
-        //   if(row.url.split(':')[0] === "http" || row.url.split(':')[0] === "https"){
-        //     let temp = row.url.split('/');
-        //     browserHistory.push({
-        //       url: temp[0] + temp[1]+ temp[2],
-        //       time: moment(row.last_visit_date/1000).format('MMM DD, YYYY')
-        //     });
-        //   }
-        // }
+        for (let row of rows) {
+          if(row.url.split(':')[0] === "http" || row.url.split(':')[0] === "https"){
+            let temp = row.url.split('/');
+            browserHistory.push({
+              url: temp[1]+ temp[2],
+              time: moment(row.visit_time/1000).format('MMM DD, YYYY')
+            });
+          }
+        }
         console.log("Finished reding.");
       }
     }
@@ -245,17 +243,6 @@ function getSafariBasedBrowserRecords(paths, browserName, historyTimeLength) {
 
 function getFirefoxHistory(historyTimeLength = 5) {
   return (function (historyTimeLength) {
-    browsers.browserDbLocations.firefox = browsers.findPaths(
-      browsers.defaultPaths.firefox,
-      browsers.FIREFOX
-    );
-    let getPaths = browsers.findPaths(
-      browsers.defaultPaths.firefox,
-      browsers.FIREFOX
-    );
-    console.log("historyTimeLength: " + historyTimeLength);
-    console.log("firefox");
-    console.log(getPaths);
     let records = getBrowserHistory(
       browsers.browserDbLocations.firefox,
       browsers.FIREFOX,
@@ -266,37 +253,14 @@ function getFirefoxHistory(historyTimeLength = 5) {
 }
 
 function getSeaMonkeyHistory(historyTimeLength = 5) {
-  return new Promise((resolve, reject) => {
-    let getPaths = [
-      browsers
-      .findPaths(browsers.defaultPaths.seamonkey, browsers.SEAMONKEY)
-      .then(foundPaths => {
-        browsers.browserDbLocations.seamonkey = foundPaths;
-      })
-    ];
-    Promise.all(getPaths).then(
-      () => {
-        let getRecords = [
-          getBrowserHistory(
-            browsers.browserDbLocations.seamonkey,
-            browsers.SEAMONKEY,
-            historyTimeLength
-          )
-        ];
-        Promise.all(getRecords).then(
-          records => {
-            resolve(records);
-          },
-          error => {
-            reject(error);
-          }
-        );
-      },
-      error => {
-        reject(error);
-      }
+  return (function (historyTimeLength) {
+    let getRecords = getBrowserHistory(
+      browsers.browserDbLocations.seamonkey,
+      browsers.SEAMONKEY,
+      historyTimeLength
     );
-  });
+    return getRecords;
+  })(historyTimeLength);
 }
 
 function getChromeHistory(historyTimeLength) {
@@ -320,116 +284,56 @@ function getChromeHistory(historyTimeLength) {
 
 function getOperaHistory(historyTimeLength = 5) {
   return (function (historyTimeLength) {
-    browsers.browserDbLocations.opera = browsers.findPaths(
-      browsers.defaultPaths.opera,
-      browsers.OPERA
-    );
-    let getPaths = browsers.findPaths(
-      browsers.defaultPaths.opera,
-      browsers.OPERA
-    );
-    console.log("historyTimeLength: " + historyTimeLength);
-    console.log("Chrome");
-    console.log(getPaths);
     let getRecords = getBrowserHistory(
       browsers.browserDbLocations.opera,
       browsers.OPERA,
       historyTimeLength
     );
-    console.log("Records");
-    console.log(getRecords);
+    return getRecords;
   })(historyTimeLength);
 }
 
 function getTorchHistory(historyTimeLength = 5) {
   return (function (historyTimeLength) {
-    browsers.browserDbLocations.torch = browsers.findPaths(
-      browsers.defaultPaths.torch,
-      browsers.TORCH
-    );
-    let getPaths = browsers.findPaths(
-      browsers.defaultPaths.torch,
-      browsers.TORCH
-    );
-    console.log("historyTimeLength: " + historyTimeLength);
-    console.log("Chrome");
-    console.log(getPaths);
     let getRecords = getBrowserHistory(
       browsers.browserDbLocations.torch,
       browsers.TORCH,
       historyTimeLength
     );
-    console.log("Records");
-    console.log(getRecords);
+    return getRecords;
   })(historyTimeLength);
 }
 
 function getSafariHistory(historyTimeLength = 5) {
   return (function (historyTimeLength) {
-    browsers.browserDbLocations.safari = browsers.findPaths(
-      browsers.defaultPaths.safari,
-      browsers.SAFARI
-    );
-    let getPaths = browsers.findPaths(
-      browsers.defaultPaths.safari,
-      browsers.SAFARI
-    );
-    console.log("historyTimeLength: " + historyTimeLength);
-    console.log("Safari");
-    console.log(getPaths);
     let getRecords = getBrowserHistory(
       browsers.browserDbLocations.safari,
       browsers.SAFARI,
       historyTimeLength
     );
-    console.log("Records");
-    console.log(getRecords);
+    return getRecords;
   })(historyTimeLength);
 }
 
 function getMaxthonHistory() {
   return (function (historyTimeLength) {
-    browsers.browserDbLocations.maxthon = browsers.findPaths(
-      browsers.defaultPaths.maxthon,
-      browsers.MAXTHON
-    );
-    let getPaths = browsers.findPaths(
-      browsers.defaultPaths.maxthon,
-      browsers.MAXTHON
-    );
-    console.log("historyTimeLength: " + historyTimeLength);
-    console.log("MAXTHON");
-    console.log(getPaths);
     let getRecords = getBrowserHistory(
       browsers.browserDbLocations.maxthon,
       browsers.MAXTHON,
       historyTimeLength
     );
-    console.log("Records");
-    console.log(getRecords);
+    return getRecords;
   })(historyTimeLength);
 }
 
 function getVivaldiHistory(historyTimeLength = 5) {
   return (function (historyTimeLength) {
-    browsers.browserDbLocations.vivaldi = browsers.findPaths(
-      browsers.defaultPaths.vivaldi,
-      browsers.VIVALDI
-    );
-    let getPaths = browsers.findPaths(
-      browsers.defaultPaths.vivaldi,
-      browsers.VIVALDI
-    );
-    console.log("historyTimeLength: " + historyTimeLength);
-    console.log("Chrome");
-    console.log(getPaths);
     let getRecords = getBrowserHistory(
       browsers.browserDbLocations.vivaldi,
       browsers.VIVALDI,
       historyTimeLength
     );
-    console.log("Records");
-    console.log(getRecords);
+    return getRecords;
   })(historyTimeLength);
 }
 

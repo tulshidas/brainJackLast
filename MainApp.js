@@ -4,6 +4,11 @@ const path = require('path');
 const ActivityTracker = require("./ActivityTracker");
 const config = require('./config');
 const log = require('electron-log');
+// prevent sleep suspension
+const { powerSaveBlocker } = require('electron')
+
+const id = powerSaveBlocker.start('prevent-app-suspension')
+// prevent sleep suspension
 
 module.exports = class MainApp {
   constructor(app, menu) {

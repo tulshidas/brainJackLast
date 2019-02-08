@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "dist": "build",
-    "ship": "build --win -p always"
+    "ship": "build --win -p always",
+    "rebuild": "electron-rebuild -f -w better-sqlite3 -v 2.0"
   },
   "repository": "https://github.com/tulshidas/brainJackLast",
   "keywords": [
