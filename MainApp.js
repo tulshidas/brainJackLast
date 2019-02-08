@@ -34,6 +34,7 @@ module.exports = class MainApp {
 
   downloadupdateAndInstall(){
     autoUpdater.on('update-downloaded', (info) => {
+        this.flags.isFromSystemTrayClose = true;
         autoUpdater.quitAndInstall();
     });
   }
@@ -116,6 +117,7 @@ module.exports = class MainApp {
   mainWindowEvents() {
     this._mainWindow.on('close', event => {
       if (!this.flags.isFromSystemTrayClose) {
+        console.log('In preventDefault')
         event.preventDefault();
         this._mainWindow.hide();
       }

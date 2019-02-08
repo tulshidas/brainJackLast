@@ -1,11 +1,12 @@
 {
   "name": "BrainJack",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "version": "1.0.8",
+  "description": "A minimal Electron application with auto update",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "build"
+    "dist": "build",
+    "ship": "build --win -p always"
   },
   "repository": "https://github.com/tulshidas/brainJackLast",
   "keywords": [
@@ -27,7 +28,7 @@
     "cmake-js": "^4.0.1",
     "crypto": "^1.0.1",
     "electron-log": "^2.2.17",
-    "electron-updater": "^2.18.2",
+    "electron-updater": "^3.1.2",
     "iohook": "^0.3.0",
     "lodash": "^4.17.11",
     "request": "^2.88.0"
@@ -105,6 +106,13 @@
       "license": "LICENSE.md",
       "runAfterFinish": true
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "tulshidas",
+        "repo": "brainJackLast"
+      }
+    ],
     "asar": true,
     "asarUnpack": "scripts"
   }
