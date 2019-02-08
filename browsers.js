@@ -75,6 +75,8 @@ else {
 }
 
 setTimeout(() => {
+  //***********************************
+  // The most time consuming operations
   browserDbLocations.chrome = findPaths(
     defaultPaths.chrome,
     CHROME
