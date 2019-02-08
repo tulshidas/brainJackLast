@@ -23,8 +23,8 @@ module.exports = class ActivityTracker {
 
     setTime() {
         ++this.totalSeconds;
-        console.log('maxIdleTime: '+ this.maxIdleTime);
-        console.log('totalSeconds: '+ this.totalSeconds);
+        //console.log('maxIdleTime: '+ this.maxIdleTime);
+        //console.log('totalSeconds: '+ this.totalSeconds);
 
         if (this.totalSeconds > this.maxIdleTime && !this.startIdleTime) {
             this.eventHandler();
@@ -46,7 +46,7 @@ module.exports = class ActivityTracker {
     }
 
     eventHandler(event){
-        console.log('in eventHandler:')
+        //console.log('in eventHandler:')
         if (this.totalSeconds > this.maxIdleTime && !this.startIdleTime) {
             this.closeLastActiveWindow(new Date);
             this.startIdleTime = true;
@@ -57,7 +57,7 @@ module.exports = class ActivityTracker {
             this.startIdleTime = false;
         }
         else {
-            console.log('in else:');
+            //console.log('in else:');
             this.resetIdleTimer();
         }
     }

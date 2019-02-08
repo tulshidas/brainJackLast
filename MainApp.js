@@ -41,7 +41,7 @@ module.exports = class MainApp {
 
   logSettings() {
     log.transports.file.file = path.join(__dirname,'log.txt');
-    console.log("logging");
+    //console.log("logging");
     log.warn("logging");
   }
 
@@ -117,7 +117,7 @@ module.exports = class MainApp {
   mainWindowEvents() {
     this._mainWindow.on('close', event => {
       if (!this.flags.isFromSystemTrayClose) {
-        console.log('In preventDefault')
+        //console.log('In preventDefault')
         event.preventDefault();
         this._mainWindow.hide();
       }
@@ -126,7 +126,7 @@ module.exports = class MainApp {
 
   async ipcEvents() {
     await this._ipcMain.on('getUserId', (event, arg) => {
-      console.log(arg);
+      //console.log(arg);
       if (arg && !this._activityTracker) {
         event.returnValue = true;
         this._mainWindow.maximize();
